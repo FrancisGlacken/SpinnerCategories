@@ -2,7 +2,6 @@ package com.deltorostudios.myapplication;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -15,8 +14,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Spinner spinner1, spinner2;
-    private Button btnSubmit, btnAddToList1, btnaddtoList2;
+    private Spinner spinner;
+    private Button btnSubmit, btnAddToList;
     private List<String> list;
     private EditText editTextCategory;
 
@@ -24,11 +23,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        spinner1 = (Spinner) findViewById(R.id.spinner1);
-        spinner2 = (Spinner) findViewById(R.id.spinner2);
+        spinner = (Spinner) findViewById(R.id.spinner);
         btnSubmit = (Button) findViewById(R.id.btnSubmit);
-        btnAddToList1 = (Button) findViewById(R.id.btnAddToList1);
-        btnaddtoList2 = (Button) findViewById(R.id.btnAddToList2);
+        btnAddToList = (Button) findViewById(R.id.btnAddToList);
         editTextCategory = (EditText) findViewById(R.id.editTextCategory);
         list = new ArrayList<String>();
 
@@ -36,40 +33,29 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner2.setAdapter(dataAdapter);
+        spinner.setAdapter(dataAdapter);
 
-        addItemsOnSpinner2();
         setBtnSubmit();
 
-        btnaddtoList2.setOnClickListener(new View.OnClickListener() {
+        btnAddToList.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
 
                 String category = editTextCategory.getText().toString();
 
-                list.add(category);
-
-
+                if (list.contains(category)){
+                    Toast.makeText(MainActivity.this, "That category exists already!", Toast.LENGTH_SHORT).show();
+                } else if (category.equals("")) {
+                    Toast.makeText(MainActivity.this, "Please enter a category!", Toast.LENGTH_SHORT).show();
+                } else {
+                    list.add(category);
+                }
             }
         });
 
         dataAdapter.notifyDataSetChanged();
-
-
-
-
-
     }
-
-    // add items into spinner dynamically
-    public void addItemsOnSpinner2() {
-
-
-
-    }
-
-
 
     // get the selected dropdown list value
     public void setBtnSubmit() {
@@ -78,37 +64,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "OnClickListener : " +
-                    "\nSpinner 1 : " + String.valueOf(spinner1.getSelectedItem()) +
-                    "\nSpinner 2 : " + String.valueOf(spinner2.getSelectedItem()),
+                Toast.makeText(MainActivity.this,
+                        "Category: " + String.valueOf(spinner.getSelectedItem()),
                         Toast.LENGTH_SHORT).show();
             }
         });
     }
-
-
-
-    /* // Will add an item to list 1 in theory
-    public void setBtnAddToList1() {
-
-        btnAddToList1.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-    } */
-
-    /*
-    // OnItemSelected/CustomOnItemSelectedListener
-    public void addListenerOnSpinnerItemSelection() {
-        spinner1 = (Spinner) findViewById(R.id.spinner1);
-        spinner1.setOnItemSelectedListener(new CustomOnItemSelectedListener());
-
-    } */
-
-
 
 
 }
