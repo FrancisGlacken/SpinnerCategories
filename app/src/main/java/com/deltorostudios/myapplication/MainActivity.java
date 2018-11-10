@@ -23,37 +23,48 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Get view references for spinner menu, etc.
         spinner = (Spinner) findViewById(R.id.spinner);
         btnSubmit = (Button) findViewById(R.id.btnSubmit);
         btnAddToList = (Button) findViewById(R.id.btnAddToList);
         editTextCategory = (EditText) findViewById(R.id.editTextCategory);
-        list = new ArrayList<String>();
 
+
+        // Make a list and add "Exercise" to it
+        list = new ArrayList<String>();
         list.add("Exercise");
 
+        // Make an ArrayAdapter to populate the Spinner
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
 
+        // onClickListener for Submit Toast button
         setBtnSubmit();
 
+
+        // onClickListener for Add to List button
         btnAddToList.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
 
+                // Make a string and give it the value of the EditText
                 String category = editTextCategory.getText().toString();
 
-                if (list.contains(category)){
+                // Prevent duplicate categories, blank categories or adds a category
+                if (list.contains(category)) {
                     Toast.makeText(MainActivity.this, "That category exists already!", Toast.LENGTH_SHORT).show();
-                } else if (category.equals("")) {
+                }
+                else if (category.equals("")) {
                     Toast.makeText(MainActivity.this, "Please enter a category!", Toast.LENGTH_SHORT).show();
                 } else {
                     list.add(category);
                 }
             }
         });
-
+        // Notify the adapter that the data set has changed which updates the UI
         dataAdapter.notifyDataSetChanged();
     }
 
