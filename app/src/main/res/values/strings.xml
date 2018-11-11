@@ -3,4 +3,5 @@
     <string name="submit_toast">Submit Toast</string>
     <string name="add_to_list">Add To List</string>
     <string name="enter_a_new_category">Enter a new category</string>
+    <string name="remove_category">Remove Category</string>
 </resources>
