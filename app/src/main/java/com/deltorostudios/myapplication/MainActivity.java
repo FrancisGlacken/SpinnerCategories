@@ -34,6 +34,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private EditText editTextCategory;
     private ArrayAdapter<String> dataAdapter;
 
+    private ArrayList<String> list2 = new ArrayList<>();
+    private Spinner spinner2;
+    private EditText editTextCategory2;
+    private ArrayAdapter<String> dataAdapter2;
+    private String key = "greenKey";
+
 
     /**
      * onCreate Method
@@ -48,10 +54,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         spinner = findViewById(R.id.spinner);
         editTextCategory = findViewById(R.id.editTextCategory);
 
-
-        list = getArrayList("key");
-
-
+        // Place Exercise in the spinner on first start // then get list from shared preferences
+        getSpinnerData();
 
 
         // Make an ArrayAdapter to populate the Spinner
@@ -60,7 +64,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         spinner.setAdapter(dataAdapter);
 
 
+
     } // End onCreate
+
+
+
 
 
     /**
@@ -70,8 +78,85 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onDestroy() {
         super.onDestroy();
 
-        saveArrayList(list, "key");
+        saveArrayList(list, key);
     } // End onDestroy
+
+
+
+
+
+
+    /**
+     * saveArrayList method, for converting our ArrayList into a json object for storage in shared preferences
+     * @param list
+     * @param key
+     */
+    /*
+    TO MAKE A SECOND ARRAY LIST, MAKE ANOTHER LIST/KEY VARIABLE TO HOLD IT TEMPORARILY BEFORE
+    CHANGING IT TO THE RELEVANT LIST VARIABLE
+     */
+   public void saveArrayList(ArrayList<String> list, String key) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        SharedPreferences.Editor editor = prefs.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(list);
+        editor.putString(key, json);
+        editor.apply();
+    }
+
+
+
+
+
+
+
+
+    /**
+     * getArrayList method, for getting our json object back from shared preferences and converting it
+     * @param key
+     * @return
+     */
+    public ArrayList<String> getArrayList(String key){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        Gson gson = new Gson();
+        String json = prefs.getString(key, null);
+        Type type = new TypeToken<ArrayList<String>>() {}.getType();
+        return gson.fromJson(json, type);
+    }
+
+
+
+
+
+
+    /**
+     * autoInsertCategoryOnce method, for adding "Exercise" to the list on startup. If this method
+     *                                  is not called, the app will crash because the list is null
+     *
+     */
+    public void getSpinnerData() {
+        list = new ArrayList<>();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (!prefs.getBoolean("firstTime", false)) {
+
+            //This code will only execute on the first run
+            list.add("Exercise");
+
+
+            // Save the boolean needed to terminate this if statement permanently
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("firstTime", true);
+            editor.apply();
+        } else {
+
+            // Get list from shared preferences
+            list = getArrayList(key);
+        }
+    }
+
+
+
+
 
 
     /**
@@ -84,6 +169,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 "Category: " + String.valueOf(spinner.getSelectedItem()),
                 Toast.LENGTH_SHORT).show();
     }
+
+
+
+
 
     /**
      * BtnAddToList button, for adding categories to the list
@@ -102,11 +191,20 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         else if (localCategory.equals("")) {
             Toast.makeText(MainActivity.this, "Please enter a category!", Toast.LENGTH_SHORT).show();
         } else {
+            // Add the category
             list.add(localCategory);
+
+            // Change the spinner to the new category // getting the position of the new category
+            spinner.setSelection(dataAdapter.getPosition(localCategory));
         }
 
+        // Tell the adapter to update the arrayList
         dataAdapter.notifyDataSetChanged();
     }
+
+
+
+
 
     /**
      * BtnRemoveFromList button, for removing categories from the list
@@ -143,38 +241,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
         dialog.show();
-
-
-
     }
 
-    /**
-     * saveArrayList method, for converting our ArrayList into a json object for storage in shared preferences
-     * @param list
-     * @param key
-     */
-   public void saveArrayList(ArrayList<String> list, String key) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-        SharedPreferences.Editor editor = prefs.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(list);
-        editor.putString(key, json);
-        editor.apply();
-    }
 
-    /**
-     * getArrayList method, for getting our json object back from shared preferences and converting it
-     * @param key
-     * @return
-     */
-    public ArrayList<String> getArrayList(String key){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-        Gson gson = new Gson();
-        String json = prefs.getString(key, null);
-        Type type = new TypeToken<ArrayList<String>>() {}.getType();
-        return gson.fromJson(json, type);
 
-    }
 
 
     // Currently unused
@@ -188,7 +258,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onNothingSelected(AdapterView<?> adapterView) {
         // TODO: Something when no item is selected
     }
-
 }
 
 
