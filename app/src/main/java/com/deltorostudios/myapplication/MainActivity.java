@@ -258,6 +258,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onNothingSelected(AdapterView<?> adapterView) {
         // TODO: Something when no item is selected
     }
+
 }
 
 

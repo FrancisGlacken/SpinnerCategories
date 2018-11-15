@@ -81,4 +81,5 @@
         app:layout_constraintTop_toTopOf="@+id/btnAddToList"
         android:onClick="BtnRemoveFromList"/>
 
+
 </android.support.constraint.ConstraintLayout>
